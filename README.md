@@ -15,7 +15,7 @@ Provides LLMtalk narrative integration API and custom UI for Unknown Casualties 
 
 ## ✦ Key Features / 核心特性
 
-- **LLM-Powered Companion Dialogue**: Connect your favorite LLM API (DeepSeek, OpenAI, Claude, etc.) to give your companion an authentic in-character voice. Features real-time typewriter dialogue, bodily status perception, and intimate soothing interactions.
+- **LLM-Powered Companion Dialogue**: Connect your favorite LLM API (DeepSeek, OpenAI, Claude, etc.) to give your companion an authentic in-character voice. Features real-time typewriter dialogue.
 - **8-Language Seamless Interface**: Fully localized in English, 简体中文, 繁體中文, 日本語, Русский, 한국어, Deutsch, and Tiếng Vi
 
 ---
