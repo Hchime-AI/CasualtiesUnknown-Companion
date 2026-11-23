@@ -254,16 +254,23 @@ namespace CUCompanion.P2AI
 			Vector2 landVel = ((UnityEngine.Object)(object)player != (UnityEngine.Object)null && player.rb != null) ? player.rb.velocity : Vector2.zero;
 			float duration = Time.unscaledTime - jumpStartTime;
 
+			// 跨层传送或大距离位移瞬移，不记录异常跳跃数据，防止遍历成千上万网格冲垮内存
+			if (Mathf.Abs(landPos.x - takeoffPos.x) > 30f || Mathf.Abs(landPos.y - takeoffPos.y) > 30f)
+			{
+				return;
+			}
+
 			// 缓存显示轨迹供渲染器绘制亮蓝绿色参考线
 			lastJumpRenderPoints.Clear();
 			lastJumpRenderPoints.AddRange(currentRenderPoints);
 
 			jumpCounter++;
 
-			// 采集周围区格地貌
+			// 采集周围区格地貌（仅当开启记录开关时采集）
+			ModConfig cfg = CompanionPlugin.Cfg;
 			WorldGeneration world = WorldGeneration.world;
 			var terrainCells = new List<ShadowTerrainCell>();
-			if ((UnityEngine.Object)(object)world != (UnityEngine.Object)null)
+			if (cfg != null && cfg.p2ShadowJumpRecord && (UnityEngine.Object)(object)world != (UnityEngine.Object)null && world.worldExists && !world.generatingWorld)
 			{
 				float minWorldX = Mathf.Min(takeoffPos.x, landPos.x) - 4f;
 				float maxWorldX = Mathf.Max(takeoffPos.x, landPos.x) + 4f;

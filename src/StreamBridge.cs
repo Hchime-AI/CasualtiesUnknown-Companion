@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using Newtonsoft.Json.Linq;
@@ -21,31 +19,15 @@ public class StreamBridge : MonoBehaviour
 {
 	public static StreamBridge Instance;
 
-	private TcpListener listener;
-
 	private float retryAt;
-
-	private Thread acceptThread;
-
 	private volatile bool running;
-
 	private readonly Queue<Action> mainQueue = new Queue<Action>();
-
 	private readonly object qLock = new object();
-
 	private readonly List<float> danmakuStamps = new List<float>();
-
 	private readonly List<float> displayStamps = new List<float>();
-
 	private string lastText = "";
-
 	private float lastTextAt = -99f;
-
 	private float lastDropLog = -99f;
-
-	private Process hub;
-
-	private static bool hubTried;
 
 	private decimal balanceTotal = -1m;
 
@@ -99,15 +81,6 @@ public class StreamBridge : MonoBehaviour
 		{
 			StopServer();
 		}
-		if (flag && !hubTried)
-		{
-			hubTried = true;
-			LaunchHub();
-		}
-		if (!flag)
-		{
-			hubTried = false;
-		}
 		lock (qLock)
 		{
 			int num = 0;
@@ -142,212 +115,13 @@ public class StreamBridge : MonoBehaviour
 
 	private void StartServer()
 	{
-		int num = ((CompanionPlugin.Cfg != null && CompanionPlugin.Cfg.streamPort > 0) ? CompanionPlugin.Cfg.streamPort : 8768);
-		for (int i = 0; i < 6; i++)
-		{
-			if (running)
-			{
-				break;
-			}
-			try
-			{
-				int num2 = num + i;
-				listener = new TcpListener(IPAddress.Loopback, num2);
-				listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, optionValue: true);
-				listener.Start();
-				num = num2;
-				running = true;
-				acceptThread = new Thread(AcceptLoop)
-				{
-					IsBackground = true
-				};
-				acceptThread.Start();
-				CompanionPlugin.Log.LogInfo((object)("[stream] 弹幕端口已开启 127.0.0.1:" + num));
-			}
-			catch (Exception ex)
-			{
-				running = false;
-				retryAt = Time.unscaledTime + 5f;
-				CompanionPlugin.Log.LogWarning((object)("[stream] 端口开启失败（5 秒后重试）：" + ex.Message));
-			}
-		}
+		running = true;
 	}
 
 	private void StopServer()
 	{
 		running = false;
-		try
-		{
-			if (listener != null)
-			{
-				listener.Stop();
-			}
-		}
-		catch
-		{
-		}
-		listener = null;
 		danmakuStamps.Clear();
-	}
-
-	private void AcceptLoop()
-	{
-		while (running)
-		{
-			TcpClient tcpClient = null;
-			try
-			{
-				tcpClient = listener.AcceptTcpClient();
-			}
-			catch
-			{
-				break;
-			}
-			try
-			{
-				HandleClient(tcpClient);
-			}
-			catch (Exception ex)
-			{
-				CompanionPlugin.Log.LogWarning((object)("[stream] " + ex.Message));
-			}
-			finally
-			{
-				try
-				{
-					tcpClient.Close();
-				}
-				catch
-				{
-				}
-			}
-		}
-	}
-
-	private void HandleClient(TcpClient c)
-	{
-		c.ReceiveTimeout = 4000;
-		NetworkStream stream = c.GetStream();
-		stream.ReadTimeout = 4000;
-		MemoryStream memoryStream = new MemoryStream();
-		byte[] array = new byte[4096];
-		int num = -1;
-		while (memoryStream.Length < 262144)
-		{
-			int num2 = stream.Read(array, 0, array.Length);
-			if (num2 <= 0)
-			{
-				break;
-			}
-			memoryStream.Write(array, 0, num2);
-			num = IndexOf(memoryStream.GetBuffer(), (int)memoryStream.Length, new byte[4] { 13, 10, 13, 10 });
-			if (num >= 0)
-			{
-				break;
-			}
-		}
-		byte[] array2 = memoryStream.ToArray();
-		if (num < 0)
-		{
-			Respond(stream, 400, "{\"ok\":false,\"err\":\"bad request\"}");
-			return;
-		}
-		string[] array3 = Encoding.UTF8.GetString(array2, 0, num).Split('\n');
-		string[] array4 = ((array3.Length != 0) ? array3[0].Trim() : "").Split(' ');
-		string text = ((array4.Length != 0) ? array4[0] : "GET");
-		string text2 = ((array4.Length > 1) ? array4[1] : "/");
-		int result = 0;
-		for (int i = 1; i < array3.Length; i++)
-		{
-			string text3 = array3[i].Trim();
-			int num3 = text3.IndexOf(':');
-			if (num3 > 0 && text3.Substring(0, num3).Trim().ToLower() == "content-length")
-			{
-				int.TryParse(text3.Substring(num3 + 1).Trim(), out result);
-			}
-		}
-		int num4 = num + 4;
-		for (int num5 = array2.Length - num4; num5 < result; num5 = array2.Length - num4)
-		{
-			int num6 = stream.Read(array, 0, array.Length);
-			if (num6 <= 0)
-			{
-				break;
-			}
-			byte[] array5 = new byte[array2.Length + num6];
-			Buffer.BlockCopy(array2, 0, array5, 0, array2.Length);
-			Buffer.BlockCopy(array, 0, array5, array2.Length, num6);
-			array2 = array5;
-		}
-		string text4 = ((result > 0 && array2.Length >= num4) ? Encoding.UTF8.GetString(array2, num4, Math.Min(result, array2.Length - num4)) : "");
-		if (text == "GET" && (text2 == "/status" || text2 == "/ping"))
-		{
-			Respond(stream, 200, StatusJson());
-		}
-		else if (text == "POST" && text2.StartsWith("/danmaku"))
-		{
-			string user = Loc.T("观众");
-			string text5 = "";
-			try
-			{
-				JObject val = JObject.Parse(text4);
-				if (val["user"] != null)
-				{
-					user = ((object)val["user"]).ToString();
-				}
-				if (val["text"] != null)
-				{
-					text5 = ((object)val["text"]).ToString();
-				}
-			}
-			catch
-			{
-				text5 = text4;
-			}
-			text5 = (text5 ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-			if (text5.Length == 0)
-			{
-				Respond(stream, 200, "{\"ok\":false,\"err\":\"empty\"}");
-				return;
-			}
-			bool flag = AcceptDanmaku(user, text5);
-			Respond(stream, 200, flag ? "{\"ok\":true}" : "{\"ok\":false,\"err\":\"rate\"}");
-		}
-		else
-		{
-			Respond(stream, 404, "{\"ok\":false}");
-		}
-	}
-
-	private static int IndexOf(byte[] hay, int len, byte[] needle)
-	{
-		for (int i = 0; i + needle.Length <= len; i++)
-		{
-			bool flag = true;
-			for (int j = 0; j < needle.Length; j++)
-			{
-				if (hay[i + j] != needle[j])
-				{
-					flag = false;
-					break;
-				}
-			}
-			if (flag)
-			{
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	private static void Respond(NetworkStream ns, int code, string json)
-	{
-		byte[] bytes = Encoding.UTF8.GetBytes(json);
-		string s = "HTTP/1.1 " + code + " OK\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: " + bytes.Length + "\r\nConnection: close\r\n\r\n";
-		byte[] bytes2 = Encoding.ASCII.GetBytes(s);
-		ns.Write(bytes2, 0, bytes2.Length);
-		ns.Write(bytes, 0, bytes.Length);
-		ns.Flush();
 	}
 
 	private string StatusJson()
@@ -735,49 +509,9 @@ public class StreamBridge : MonoBehaviour
 
 	private void LaunchHub()
 	{
-		try
-		{
-			string text = ((CompanionPlugin.Cfg != null) ? CompanionPlugin.Cfg.streamHubPath : null);
-			if (string.IsNullOrEmpty(text) || !File.Exists(text))
-			{
-				string assmDir = Path.GetDirectoryName(typeof(StreamBridge).Assembly.Location);
-				string c1 = Path.Combine(assmDir ?? ".", "CUStreamHub.exe");
-				string c2 = Path.Combine(BepInEx.Paths.PluginPath ?? ".", "CUCompanion", "CUStreamHub.exe");
-				string c3 = Path.Combine(BepInEx.Paths.GameRootPath ?? ".", "CUStreamHub.exe");
-				if (File.Exists(c1)) text = c1;
-				else if (File.Exists(c2)) text = c2;
-				else if (File.Exists(c3)) text = c3;
-			}
-			CompanionPlugin.Log.LogInfo((object)("[stream] 控制台路径 = " + (text ?? "(空)")));
-			if (string.IsNullOrEmpty(text) || !File.Exists(text))
-			{
-				CompanionPlugin.Log.LogInfo((object)"[stream] 未找到直播控制台程序（streamHubPath），只开本地弹幕端口");
-				return;
-			}
-			ProcessStartInfo processStartInfo = new ProcessStartInfo(text);
-			processStartInfo.UseShellExecute = false;
-			processStartInfo.WorkingDirectory = Path.GetDirectoryName(text);
-			hub = Process.Start(processStartInfo);
-			CompanionPlugin.Log.LogInfo((object)("[stream] 已启动直播控制台：" + text));
-		}
-		catch (Exception ex)
-		{
-			CompanionPlugin.Log.LogWarning((object)("[stream] 启动控制台失败：" + ex.Message));
-		}
 	}
 
 	private void KillHub()
 	{
-		try
-		{
-			if (hub != null && !hub.HasExited)
-			{
-				hub.Kill();
-			}
-		}
-		catch
-		{
-		}
-		hub = null;
 	}
 }

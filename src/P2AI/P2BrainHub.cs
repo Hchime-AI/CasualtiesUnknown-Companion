@@ -64,7 +64,7 @@ namespace CUCompanion.P2AI
 
 			DualMode dm = DualMode.Instance;
 			WorldGeneration world = WorldGeneration.world;
-			if ((UnityEngine.Object)(object)world == (UnityEngine.Object)null)
+			if ((UnityEngine.Object)(object)world == (UnityEngine.Object)null || !world.worldExists || world.generatingWorld || ((UnityEngine.Object)(object)world.loadingObject != (UnityEngine.Object)null && world.loadingObject.activeInHierarchy))
 			{
 				return;
 			}

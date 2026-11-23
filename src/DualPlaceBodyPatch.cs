@@ -34,10 +34,30 @@ internal static class DualPlaceBodyPatch
 			if ((Object)(object)other.rb != (Object)null)
 			{
 				other.rb.velocity = Vector2.zero;
+				other.rb.angularVelocity = 0f;
 				other.rb.position = new Vector2(targetPos.x, targetPos.y);
 			}
 			other.moveDir = Vector2.zero;
 			((Component)other).transform.position = targetPos;
+
+			// 同步重置所有物理肢体位置与刚体速度，杜绝跨越数百米造成的关节拉扯 NaN 崩溃
+			if (other.limbs != null)
+			{
+				for (int i = 0; i < other.limbs.Length; i++)
+				{
+					Limb l = other.limbs[i];
+					if ((Object)(object)l != (Object)null)
+					{
+						if ((Object)(object)l.rb != (Object)null)
+						{
+							l.rb.velocity = Vector2.zero;
+							l.rb.angularVelocity = 0f;
+							l.rb.position = new Vector2(targetPos.x, targetPos.y);
+						}
+						((Component)l).transform.position = targetPos;
+					}
+				}
+			}
 		}
 		catch
 		{

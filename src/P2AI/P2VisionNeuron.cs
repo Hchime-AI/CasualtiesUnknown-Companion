@@ -17,7 +17,7 @@ namespace CUCompanion.P2AI
 		/// <summary>
 		/// 截取当前画面为 Texture2D
 		/// </summary>
-		public Texture2D CaptureScreenshot()
+		public Texture2D CaptureViewport()
 		{
 			try
 			{
@@ -49,7 +49,7 @@ namespace CUCompanion.P2AI
 		/// </summary>
 		public byte[] CapturePngBytes()
 		{
-			Texture2D tex = CaptureScreenshot();
+			Texture2D tex = CaptureViewport();
 			if (tex == null) return null;
 			try
 			{
