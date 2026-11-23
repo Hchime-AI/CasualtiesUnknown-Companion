@@ -8,7 +8,7 @@
 
 ## ✦ Overview / 概述
 
-
+Nexusmod:https://www.nexusmods.com/scavprototype/mods/1069
 Provides LLMtalk narrative integration API and custom UI for Unknown Casualties (未知伤亡).
 
 ---
