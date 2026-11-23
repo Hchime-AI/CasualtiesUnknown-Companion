@@ -30,7 +30,7 @@ Provides LLMtalk narrative integration API and custom UI for Unknown Casualties 
 ---
 
 ## ✦ Project Creators & Credits / 制作团队与致谢
-This mod still has plenty of room for improvement. Because real life and making a living keep me busy, I just don't have enough bandwidth to push frequent or major updates. So, I've decided to completely open-source this concept to the community—all modders and creators are welcome to contribute, fork/remix, and co-develop it together.
+There's still a lot of room to improve this mod, but due to work and real life, I don't have time to maintain it. This concept is completely open to the community—anyone is welcome to improve, take over, or build upon it.
 
 - **Creator 1**: Hchime-ai
 - **Creator 2**: meowgreen
