@@ -528,8 +528,8 @@ public class IntimateController : MonoBehaviour
 			catch
 			{
 			}
-			Say(Loc.T("（把腿慢慢收拢，指尖有点抖）……好。主人让我做，我就做。"));
-			instance.AddLine(instance.PersonaName(), Loc.T("（接受指令，把手放到腿间）"), player: false);
+			Say(Loc.T("（靠着墙壁慢慢坐下，调整呼吸）……好，我听你的。"));
+			instance.AddLine(instance.PersonaName(), Loc.T("（接受指令，开始调整呼吸放松身体）"), player: false);
 			if (Debt)
 			{
 				instance.AddLine(instance.PersonaName(), LocalizationManager.T("debtHint"), player: false);
@@ -589,9 +589,21 @@ public class IntimateController : MonoBehaviour
 		CompanionHost instance = CompanionHost.Instance;
 		if (!((Object)(object)instance == (Object)null) && instance.HasBody && instance.CanSpeak())
 		{
-			string[] array = ((phase < 4) ? new string[4] { Loc.T("（手在腿间慢慢动，呼吸变乱）……主人，我在做。"), Loc.T("（咬着下唇，动作有点生涩）这样做对吗……？"), Loc.T("（小声地喘）……有点热，有点麻。"), Loc.T("（手指停了一下又继续）……我在想你看着我。") } : new string[4] { Loc.T("（手指动得更急，喉咙里滚出一声长长的音）主人……我、我有点……"), Loc.T("（腰不受控制地抬了一下，喘得很碎）……脑子空了，好奇怪……"), Loc.T("（眼眶发湿，声音散掉）别停……不，别看我……"), Loc.T("（整个人软下去，指尖还在动）……嗯……再来一点……") });
+			string[] array = ((phase < 4) ? new string[4]
+			{
+				Loc.T("（闭上眼睛深呼吸，声音微颤）……主人，我在照做。"),
+				Loc.T("（轻靠着墙面，呼吸渐渐散乱）这样……感觉稍微好一些了。"),
+				Loc.T("（小声地喘息）……身上有点热，心跳好快。"),
+				Loc.T("（停顿了一下，呼吸放缓）……有你在通讯器那头，感觉安心很多。")
+			} : new string[4]
+			{
+				Loc.T("（呼吸变得急促，手指紧紧抓着衣服）……呼……心跳得好剧烈……"),
+				Loc.T("（身体发软慢慢靠下去，声音断断续续）……感觉头脑有点放空……"),
+				Loc.T("（眼眶发热，轻喘着闭上眼睛）……让我缓一下……别挂断……"),
+				Loc.T("（整个人完全松弛下来，长长地呼出一口气）……嗯……终于平复些了……")
+			});
 			string fallback = array[Random.Range(0, array.Length)];
-			instance.RequestMastLine((phase >= 4) ? Loc.T("快感上脑，动作又快又乱，快要到了") : Loc.T("刚开始动作，还在试探"), fallback);
+			instance.RequestMastLine((phase >= 4) ? Loc.T("情绪剧烈释放，身体彻底松弛前夕，呼吸急促") : Loc.T("刚开始调整呼吸，尝试放松平复"), fallback);
 		}
 	}
 
@@ -603,7 +615,7 @@ public class IntimateController : MonoBehaviour
 		{
 			log.LogInfo((object)"[Intimate] Actions begun: Non-intrusive animation and cinematic zoom enabled.");
 		}
-		Say(Loc.T("（把一只手放到腿间，另一只手扣着膝盖）……开始了。"));
+		Say(Loc.T("（闭上眼睛，慢慢放松紧绷的神经）……开始了。"));
 		zoomBase = 1f;
 	}
 
@@ -1033,7 +1045,7 @@ public class IntimateController : MonoBehaviour
 			CompanionHost instance = CompanionHost.Instance;
 			if ((Object)(object)instance != (Object)null)
 			{
-				instance.RequestMastLine(Loc.T("高潮那一瞬间：整个人猛地绷紧又塌下去，脑子一片空白，话拼不成句，只能乱叫"), Loc.T("（整个人猛地绷紧又塌下去，声音全乱了）啊——主人、主人我——不行了、脑子、脑子化掉了——"), overrideBusy: true);
+				instance.RequestMastLine(Loc.T("释放平复的瞬间：整个人彻底放松下来，长舒一口气，疲惫但感到被治愈"), Loc.T("（整个人彻底松弛地瘫软下来，大口呼吸着）……呼……终于缓过来了……感觉身体在恢复……"), overrideBusy: true);
 			}
 			ClosePanel();
 			optionsOpen = false;

@@ -4,7 +4,7 @@ namespace CUCompanion;
 
 public static class LocalizationManager
 {
-	public static LangId Current = LangId.ZhCN;
+	public static LangId Current = LangId.En;
 
 	public static readonly LangId[] All = new LangId[8]
 	{
@@ -385,29 +385,29 @@ public static class LocalizationManager
 			};
 			interactions = slot switch
 			{
-				2 => new string[3] { "hum", "lean on your palm", "come closer" }, 
-				1 => new string[3] { "hum a march", "sleep against you", "report quietly" }, 
+				2 => new string[3] { "hum", "nuzzle against palm", "come close" }, 
+				1 => new string[3] { "hum", "sleep leaning against you", "report quietly" }, 
 				_ => new string[3] { "hum", "masturbate", "touch myself" }, 
 			};
 			personality = slot switch
 			{
-				2 => "Few words, hums wordless tunes, likes quiet company.", 
-				1 => "Clipped old-soldier speech, hides pain behind routine.", 
-				_ => "Timid, dull, easily startled. Voice shakes; keeps asking whether she did it right.", 
+				2 => "Speaks little, hums wordless tunes, prefers quiet companionship.", 
+				1 => "Crisp veteran soldier cadence, concealing pain behind routine protocol.", 
+				_ => "Dull and uninteresting, but steady, obedient, and bold.", 
 			};
 			appearance = slot switch
 			{
-				2 => "Small, dust-pale fur, long ears.", 
-				1 => "Lean, scarred, grey-black fur, steady eyes.", 
-				_ => "Black-furred canine experiment, tall swept-back ears, short muzzle, yellow paw pads; mucous and blood are yellow. Female.", 
+				2 => "Earth-toned fur, very long ears.", 
+				1 => "Lean, scarred, with fluffy greyish-white fur.", 
+				_ => "A black-furred canine experimental organism with tall swept-back ears, a medium-short muzzle, and yellow paw pads; mucous membranes and blood are yellow, and internal tissues are predominantly yellow.", 
 			};
 			relationship = slot switch
 			{
-				2 => "You are the experiment; the player watches through cameras.", 
+				2 => "You are an experiment; the player watches you through monitors and the radio.", 
 				1 => "You are the survivor; the player is the voice on the radio.", 
-				_ => "You are experiment SAW-01. The player is your handler and observer — you fear him and cannot leave him.", 
+				_ => "You are specimen SAW-01; the player is your handler and observer.", 
 			};
-			traits = "Sexual self-healing: fertility's side effect — fast clotting and mending; eating and sleeping replenish it (flavor only).";
+			traits = (slot == 0) ? "Excitation self-healing: gains temporary self-healing support during special activities." : "";
 			break;
 		case LangId.Ja:
 			callPlayer = slot switch
@@ -485,28 +485,28 @@ public static class LocalizationManager
 			interactions = slot switch
 			{
 				2 => new string[3] { "哼歌", "贴着手心", "靠过来" }, 
-				1 => new string[3] { "哼军歌", "靠着睡", "低声报告" }, 
+				1 => new string[3] { "哼歌", "靠着睡", "低声报告" }, 
 				_ => new string[3] { "哼歌", "自慰", "抚摸自身" }, 
 			};
 			personality = slot switch
 			{
 				2 => "话少，哼无词的调子，喜欢安静的陪伴。", 
 				1 => "干脆的旧军人腔，把痛藏在例行公事后面。", 
-				_ => "胆小、懦弱、无趣、乏味。说话发抖，一惊一乍，反复确认自己有没有做错。", 
+				_ => "无趣乏味，但稳定听话，大胆", 
 			};
 			appearance = slot switch
 			{
-				2 => "个子小，土色的毛，耳朵很长。", 
-				1 => "瘦，身上有疤，灰黑色的毛。", 
-				_ => "浑身黑毛的类犬实验生物，向后斜立的大耳朵，中短吻，黄爪垫；黏膜与血液都是黄的，内组织基本全是黄色。雌性。", 
+				2 => "土色的毛，耳朵很长。", 
+				1 => "瘦，身上有疤，灰白色蓬松的毛。", 
+				_ => "浑身黑毛的类犬实验生物，向后斜立的大耳朵，中短吻，黄爪垫；黏膜与血液都是黄的，内组织基本全是黄色。", 
 			};
 			relationship = slot switch
 			{
 				2 => "你是实验体，玩家透过监视器与无线电看着你。", 
 				1 => "你是幸存者，玩家是无线电里的声音。", 
-				_ => "你是实验体 SAW-01，玩家是你的训练员与监视者。你怕他，也离不开他。", 
+				_ => "你是实验体 SAW-01，玩家是你的训练员与监视者", 
 			};
-			traits = "性兴奋自愈：保留生育功能带来的副作用，短时间内快速止血、恢复伤势；依赖进食和休息补充（仅设定，不做机制）。";
+			traits = (slot == 0) ? "性兴奋自愈：进行特殊活动时身体会获得临时自愈支持" : "";
 			break;
 		}
 	}

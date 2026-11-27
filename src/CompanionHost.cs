@@ -1836,7 +1836,7 @@ public class CompanionHost : MonoBehaviour
 			mastSince = Time.unscaledTime;
 			Persona persona = CurrentPersona();
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine(Loc.T("你在扮演《未知伤亡》(Casualties: Unknown) 里那名幸存者，此刻正在自慰——独自一人，玩家只能通过联络器听到你。"));
+			stringBuilder.AppendLine(Loc.T("你在扮演《未知伤亡》(Casualties: Unknown) 里的幸存者，此刻正在独处进行生理安抚与呼吸平复——独自一人，玩家通过联络器听到你。"));
 			stringBuilder.AppendLine(Loc.T("名字：") + (string.IsNullOrEmpty(persona.name) ? Loc.T("同伴") : persona.name));
 			stringBuilder.AppendLine(Loc.T("性别：") + GenderWord(persona));
 			stringBuilder.AppendLine(Loc.T("性格与说话方式：") + (string.IsNullOrEmpty(persona.personality) ? Loc.T("安静、克制") : persona.personality));
@@ -1850,12 +1850,26 @@ public class CompanionHost : MonoBehaviour
 			stringBuilder.AppendLine(Loc.T("写作要求："));
 			if (StreamRule != null)
 			{
-				stringBuilder.AppendLine(Loc.T("0) 【优先级最高，与下面第 2 条的细节要求冲突时以本条为准】") + StreamRule);
+				stringBuilder.AppendLine(Loc.T("0) 【优先级最高】") + StreamRule);
 			}
-			stringBuilder.AppendLine(Loc.T("1) 只写一段话，不要换行；以「名字：」开头，后面一句台词，动作与身体细节写进中文括号。"));
-			stringBuilder.AppendLine(Loc.T("2) 括号里必须落到具体细节：手指或爪子的位置与力度、阴唇与阴蒂的形态变化、内壁的收缩与温度、体液的量与颜色与黏稠度、气味、皮肤上的汗与热度、腿根与腰腹的抽动、呼吸与喉咙里的声音。"));
-			stringBuilder.AppendLine(Loc.T("3) 台词短、断句多，像喘着说话，允许语无伦次。"));
+			stringBuilder.AppendLine(Loc.T("1) 只写一段话，不要换行；以「名字：」开头，后面一句台词，动作与呼吸反应写进括号。"));
+			stringBuilder.AppendLine(Loc.T("2) 描写自然的身体放松、深呼吸与疲惫平复的生理反应，避免露骨低俗词汇。"));
+			stringBuilder.AppendLine(Loc.T("3) 台词短促真实，带有起伏与疲惫感。"));
 			stringBuilder.AppendLine(Loc.T("4) 不写任何数值、状态名、系统说明；不写玩家在碰你（他不在场，只能听见）。"));
+			PromptConfig pCfg = CompanionPlugin.Cfg?.prompt;
+			if (pCfg != null && !string.IsNullOrEmpty(pCfg.intimatePrompt))
+			{
+				stringBuilder.AppendLine();
+				stringBuilder.AppendLine("[Custom Intimate / Physiological Prompt]");
+				stringBuilder.AppendLine(pCfg.intimatePrompt);
+			}
+			string langPrompt = pCfg?.languagePrompt;
+			if (string.IsNullOrEmpty(langPrompt))
+			{
+				langPrompt = PromptConfig.GetDefaultLanguagePrompt(LocalizationManager.Current);
+			}
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("[Language Output Instruction]\n" + langPrompt);
 			List<ChatMsg> msgs = new List<ChatMsg>();
 			msgs.Add(new ChatMsg("system", stringBuilder.ToString()));
 			StringBuilder stringBuilder2 = new StringBuilder();

@@ -27,7 +27,12 @@ public class PromptConfig
 	/// <summary>
 	/// 模型回复的目标输出语言指示（跟随模组界面显示语言切换，亦可在语言设置面板中手动自定义覆盖）
 	/// </summary>
-	public string languagePrompt = DefaultLanguagePromptZhCN;
+	public string languagePrompt = DefaultLanguagePromptEn;
+
+	/// <summary>
+	/// 亲密或特殊生理状态下的自定义提示词指令。默认留空，模组本身不内置任何露骨设定，若需无限制或特定细节描写请玩家自行在此配置。
+	/// </summary>
+	public string intimatePrompt = "";
 
 	public const string DefaultSystemPromptBase = @"You roleplay as the survivor controlled by the player in Casualties: Unknown, speaking as their inner voice and companion.
 [Roleplay Guidelines]

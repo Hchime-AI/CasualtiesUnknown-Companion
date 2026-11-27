@@ -532,13 +532,17 @@ public class SettingsEditorGui : MonoBehaviour
 		GUILayout.Label(Loc.T("写进系统提示词尾部的额外用户自定义设定（世界观、性格微调、特殊口癖或禁忌）："), styleSmall);
 		cfg.prompt.systemExtra = GUILayout.TextArea(cfg.prompt.systemExtra ?? "", styleArea, GUILayout.MinHeight(60f));
 
-		GenHead(Loc.T("六、模型采样与生成参数"));
+		GenHead(Loc.T("六、亲密/自我平复阶段附加指令 (Intimate Custom Prompt)"));
+		GUILayout.Label(Loc.T("触发亲密安抚/自我缓解阶段时的自定义模型指令（默认留空，模组本身不内置任何露骨设定；若需无限制或特定细节描写请玩家自行在此配置）："), styleSmall);
+		cfg.prompt.intimatePrompt = GUILayout.TextArea(cfg.prompt.intimatePrompt ?? "", styleArea, GUILayout.MinHeight(60f));
+
+		GenHead(Loc.T("七、模型采样与生成参数"));
 		cfg.api.temperature = GenFloat(Loc.T("温度 ") + cfg.api.temperature.ToString("F2"), Loc.T("作用：说话的多变程度。0 = 每次几乎同一句，0.9 = 正常有人味，1.5 = 很放飞。默认 0.9。"), cfg.api.temperature, 0f, 1.5f);
 		cfg.api.maxTokens = GenInt("maxTokens", Loc.T("单次发言 token 上限（") + cfg.api.maxTokens + Loc.P("）"), Loc.T("作用：角色每说一次话，模型最多能吐多少 token，超了按句末截断。范围 60–4000，默认 300。"), cfg.api.maxTokens, 60, 4000);
-		cfg.mastMaxChars = GenInt("mastMaxChars", Loc.T("自慰台词 token 上限（") + cfg.mastMaxChars + Loc.P("）"), Loc.T("作用：只管自慰阶段那几句台词，独立于上面的全局值。范围 60–4000，默认 420。"), cfg.mastMaxChars, 60, 4000);
-		cfg.mastStreamChars = GenInt("mastStreamChars", Loc.T("直播模式自慰台词 token 上限（") + cfg.mastStreamChars + Loc.P("）"), Loc.T("作用：直播模式生效时每句自慰反应的上限，短促省钱。默认 20，范围 8–4000。"), cfg.mastStreamChars, 8, 4000);
+		cfg.mastMaxChars = GenInt("mastMaxChars", Loc.T("亲密/自慰台词 token 上限（") + cfg.mastMaxChars + Loc.P("）"), Loc.T("作用：只管亲密自慰阶段那几句台词，独立于上面的全局值。范围 60–4000，默认 420。"), cfg.mastMaxChars, 60, 4000);
+		cfg.mastStreamChars = GenInt("mastStreamChars", Loc.T("直播模式亲密台词 token 上限（") + cfg.mastStreamChars + Loc.P("）"), Loc.T("作用：直播模式生效时每句自慰反应的上限，短促省钱。默认 20，范围 8–4000。"), cfg.mastStreamChars, 8, 4000);
 
-		GenHead(Loc.T("七、记忆（进提示词的历史条数）"));
+		GenHead(Loc.T("八、记忆（进提示词的历史条数）"));
 		cfg.ctxChat = GenInt("ctxChat", Loc.T("普通说话带几条（") + cfg.ctxChat + Loc.P("）"), Loc.T("作用：你打字说话时，给模型当上下文的最近历史条数。默认 7，范围 1–60。"), cfg.ctxChat, 1, 60);
 		cfg.ctxPrompt = GenInt("ctxPrompt", Loc.T("提示词【刚才的对话】带几条（") + cfg.ctxPrompt + Loc.P("）"), Loc.T("作用：拼进系统提示的「从早到晚」摘要条数。默认 10，范围 1–60。"), cfg.ctxPrompt, 1, 60);
 		cfg.ctxMast = GenInt("ctxMast", Loc.T("自慰台词参考几条（") + cfg.ctxMast + Loc.P("）"), Loc.T("作用：自慰阶段写台词时参考的最近条数。默认 4，范围 1–60。"), cfg.ctxMast, 1, 60);
@@ -559,6 +563,7 @@ public class SettingsEditorGui : MonoBehaviour
 			cfg.prompt.outputRule = PromptConfig.DefaultOutputRule;
 			cfg.prompt.languagePrompt = PromptConfig.GetDefaultLanguagePrompt(Lang.Current);
 			cfg.prompt.systemExtra = "";
+			cfg.prompt.intimatePrompt = "";
 			cfg.api.temperature = 0.9f;
 			cfg.api.maxTokens = 300;
 			cfg.mastMaxChars = 420;
@@ -1491,6 +1496,16 @@ public class SettingsEditorGui : MonoBehaviour
 		GUILayout.Label("Creator 3:  小褐XHchime-ai", styleLabel);
 		GUILayout.Space(4f);
 		GUILayout.Label("Development Tooling:  Codex-type tools", styleSmall);
+		GUILayout.EndVertical();
+
+		GUILayout.Space(10f);
+
+		// v2.2 Content & Neutrality Statement
+		GUILayout.BeginVertical(styleBox);
+		GenHead("v2.2 Statement / 版本声明");
+		GUILayout.Label("声明：早期测试中，试图用一个合理的方式给会说话的Expie重来一次的机会，但在正式发布时忽略了该功能一部分提示词未做删改和修改窗口，现在这部分被基本剔除了，仅留下了中性化的表达方式和机制，现在如果想用该LLM生成任何无限制内容，需要自己配置，mod本身不会提供任何露骨内容，另外一提默认语言已改为英文，感谢使用。", styleSmall);
+		GUILayout.Space(4f);
+		GUILayout.Label("Notice: In v2.2, all explicit prompt leftovers have been thoroughly cleaned up, leaving only neutral in-universe physiological recovery mechanics. The mod out-of-the-box does not supply any explicit/NSFW content. If you wish to use unrestricted generation, please configure the custom prompts yourself. Default language is now English.", styleSmall);
 		GUILayout.EndVertical();
 
 		// Official Links & Support

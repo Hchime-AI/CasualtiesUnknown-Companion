@@ -8,13 +8,13 @@ using Object = UnityEngine.Object;
 
 namespace CUCompanion;
 
-[BepInPlugin("com.yg.casualties.companion", "CU Companion 陪伴", "2.1.0")]
+[BepInPlugin("com.yg.casualties.companion", "CU Companion 陪伴", "2.2.0")]
 public class CompanionPlugin : BaseUnityPlugin
 {
 	public const string Guid = "com.yg.casualties.companion";
 
 	/// <summary>界面上显示的版本号，改完能一眼看出跑的是哪一版。</summary>
-	public const string VersionTag = "v2.1";
+	public const string VersionTag = "v2.2";
 
 	public static CompanionPlugin Instance;
 

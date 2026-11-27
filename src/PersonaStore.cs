@@ -25,7 +25,12 @@ public class PersonaStore
 					1 => 1, 
 					_ => 0, 
 				},
-				name = ((i == 0) ? "SAW-01" : ""),
+				name = i switch
+				{
+					2 => "Dune", 
+					1 => "Milky", 
+					_ => "Experiment", 
+				},
 				callPlayer = callPlayer,
 				interactions = interactions,
 				personality = personality,
